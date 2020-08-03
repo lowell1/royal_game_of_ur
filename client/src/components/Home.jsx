@@ -40,7 +40,7 @@ const fakeRooms = [
 
 export default function Home(props) {
     return (
-        <div className="container">
+        <div className="container pt-5">
             <UsernameForm/>
             <div className="d-flex p-2 flex-wrap">
             {
