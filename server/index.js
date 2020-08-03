@@ -12,4 +12,8 @@ io.on('connect', socket => {
         console.log("a user disconnected");
     });
 });
+
+const port = process.env.PORT || 5000;
+
 server.listen(process.env.PORT || 5000);
+console.log(`listening on port ${port}`);
