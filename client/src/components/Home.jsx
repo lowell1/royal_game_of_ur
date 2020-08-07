@@ -6,7 +6,8 @@ function UsernameForm(props) {
     
     function handleSubmit(event) {
         event.preventDefault();
-        console.log(username);
+        document.cookie = username;
+        setUsername("");
     }
 
     function handleChange(event) {
@@ -27,32 +28,23 @@ function UsernameForm(props) {
     );
 }
 
-// username of person in room
-const fakeRooms = [
-    {username: "ekjwlkj", roomId: 1},
-    {username: "asdasdasd", roomId: 2},
-    {username: "gdadsgasdg", roomId: 3},
-    {username: "asdgsd", roomId: 4},
-    {username: "werasdfawe", roomId: 5},
-    {username: "el;fjawkj", roomId: 6},
-    {username: ";lkfjealwkawssdasdasd", roomId: 7}
-];
-
 export default function Home(props) {
+    console.log(props.socket, props.userList);
+
     return (
         <div className="container pt-5">
             <UsernameForm/>
             <div className="d-flex p-2 flex-wrap">
             {
-                fakeRooms.map(function(room) {
+                props.userList.map(function(user, index) {
                     return (
-                        <div key={`room${room.roomId}`} className="w-25 p-2">
+                        <div key={index} className="w-25 p-2">
                             <div className="card text-center">
-                                <Link to={`/rooms/${room.roomId}`}>
+                                {/* <Link to={`/rooms/${room.roomId}`}> */}
                                     <div className="card-body">
-                                        <h5 className="card-title overflow-hidden text-nowrap">{room.username}</h5>
+                                        <h5 className="card-title overflow-hidden text-nowrap">{user.username}</h5>
                                     </div>
-                                </Link>
+                                {/* </Link> */}
                             </div>
                         </div>
                     );
