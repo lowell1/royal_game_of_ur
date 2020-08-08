@@ -1,7 +1,16 @@
-import React, {useState} from "react";
-import {Link} from "react-router-dom";
+import React, {useState, useEffect} from "react";
+import {
+    challengeUser, 
+    challengeResponse
+    // userChallenged,
+    // challengeAccepted,
+    // challengeDeclined,
+    // acceptChallenge,
+    // declineChallenge
+} from "../common/event_aliases";
+// import {Link} from "react-router-dom";
 
-function UsernameForm(props) {
+function UsernameForm() {
     const [username, setUsername] = useState("");
     
     function handleSubmit(event) {
@@ -28,21 +37,34 @@ function UsernameForm(props) {
     );
 }
 
-export default function Home(props) {
-    console.log(props.socket, props.userList);
+export default function Home({socket, userList}) {
+    useEffect(function() {
+        socket.on(challengeUser, function({username, userId}) {
+            socket.emit(challengeResponse, prompt(`you have been challenged by ${username}!`));
+        });
+        socket.on(challengeResponse, function(isChallengeAccepted) {
+            alert(isChallengeAccepted ? "challenge accepted" : "challenge declined");
+        });
+    }, []);
+
+    function handleChallengeButtonClick(userId) {
+        socket.emit(challengeUser, userId);
+    }
 
     return (
         <div className="container pt-5">
             <UsernameForm/>
+            {userList.length === 0 && <p>no one's here :(</p>}
             <div className="d-flex p-2 flex-wrap">
             {
-                props.userList.map(function(user, index) {
+                userList.map(function(user, index) {
                     return (
                         <div key={index} className="w-25 p-2">
                             <div className="card text-center">
                                 {/* <Link to={`/rooms/${room.roomId}`}> */}
                                     <div className="card-body">
                                         <h5 className="card-title overflow-hidden text-nowrap">{user.username}</h5>
+                                        <button onClick={() => handleChallengeButtonClick(user.userId)} type="button" className="btn btn-primary">Challenge</button>
                                     </div>
                                 {/* </Link> */}
                             </div>

@@ -4,24 +4,40 @@ const options = {
     perMessageDeflate: false
 };
 const io = require('socket.io')(server, options);
-const {updateUsers} = require("./common/event_aliases.js");
+const {
+    updateUsers, 
+    challengeUser, 
+    challengeResponse
+} = require("./common/event_aliases.js");
 
-// socket objects of connected users
-const connectedUsers = {};
+// send list of connected users to client
+function sendUserList() {
+    const userList = [];
+    for(key in io.sockets.connected) {
+        // should socket id be kept secret?
+        userList.push({userId: key, username: io.sockets.connected[key].username});
+    }
+    console.log(userList);
+    io.emit(updateUsers, userList);
+}
 
 io.on('connect', function(socket) {
-    // add user to connectedUsers
-    const username = socket.request.headers.username || "???";
-    // should socket id be kept secret?
-    connectedUsers[socket.id] = {userId: socket.id, username: username};
-
-    io.emit(updateUsers, Object.values(connectedUsers));
+    socket.username = socket.request.headers.username || "???";
+    sendUserList();
     
     socket.on("disconnect", function() {
-        delete connectedUsers[socket.id];
-        io.emit(updateUsers, Object.values(connectedUsers));
+        sendUserList();
     });
+    
+    // socket.on(challengeUser, function(userId) {
+    //     if(connectedUsers[userId]) {
+    //         connectedUsers[userId].
+    //     } else {
+    //         socket.emit(challengeResponse, false);
+    //     }
+    // });
 });
+
 
 const port = process.env.PORT || 5000;
 
