@@ -1,16 +1,15 @@
 import React, {useState, useEffect} from "react";
-import {
-    // challengeUser, 
-    // challengeResponse
-    // userChallenged,
-    // challengeAccepted,
-    // challengeDeclined,
-    // acceptChallenge,
-    // declineChallenge
-} from "../common/event_aliases";
+// import {
+//     challengeUser, 
+//     challengeResponse,
+//     userChallenged,
+//     // challengeAccepted,
+//     // challengeDeclined,
+//     // acceptChallenge,
+//     // declineChallenge
+// } from "../common/event_aliases";
 // import {Link} from "react-router-dom";
 import socket from "../common/socket.js";
-import {updateUsers} from "../common/event_aliases.js";
 
 function UsernameForm() {
     const [username, setUsername] = useState("");
@@ -18,6 +17,7 @@ function UsernameForm() {
     function handleSubmit(event) {
         event.preventDefault();
         document.cookie = username;
+        socket.emit("updateUsername", username);
         setUsername("");
     }
 
@@ -51,18 +51,38 @@ export default function Home() {
     //         alert(isChallengeAccepted ? "challenge accepted" : "challenge declined");
     //     });
 
-        socket.on(updateUsers, function(users) {
+        socket.on("updateUsers", function(users) {
             console.log(users)
             setUserList(users.filter(user => user.userId !== socket.id));
         });
 
+        socket.on("userChallenged", function(user) {
+            // confirm(`you have been challenged by ${user.username}`)
+            // console.log(window.confirm(`you have been challenged by ${user.username}`) ? "acceptChallenge" : "declineChallenge");
+            socket.emit(window.confirm(`you have been challenged by ${user.username}`) ? "acceptChallenge" : "declineChallenge");
+            // socket.emit("declineChallenge");
+            // alert(`you have been challenged by ${user.username}`)
+        })
+
+        socket.on("challengeDeclined", function(message) {
+            alert(message);
+        });
+
+        socket.on("challengeAccepted", function() {
+            alert(`accepts your challenge`);
+        });
+
         return function() {
-            socket.removeAllListeners(updateUsers);
+            socket.removeAllListeners("updateUsers");
+            socket.removeAllListeners("userChallenged");
+            socket.removeAllListeners("challengeDeclined");
+            socket.removeAllListeners("challengeAccepted");
         }
     }, []);
 
     function handleChallengeButtonClick(userId) {
-        // socket.emit(challengeUser, userId);
+        socket.emit("challengeUser", userId);
+        console.log("challenguser",userId)
     }
 
     return (
