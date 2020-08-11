@@ -3,14 +3,14 @@ module.exports = {
     updateUsers: "updateUsers",
 
     // challenge user to a game
-    challengeUser: "challengeUser",
-    challengeResponse: "challengeResponse"
+    // challengeUser: "challengeUser",
+    // challengeResponse: "challengeResponse",
 
     // // user has been challenged to a game
-    // userChallenged: "userChallenged",
+    userChallenged: "userChallenged",
 
-    // challengeAccepted: "challengeAccepted",
-    // challengeDeclined: "challengeAccepted",
-    // acceptChallenge = "acceptChallenge" ,
-    // declineChallenge = "declineChallenge"
+    challengeAccepted: "challengeAccepted",
+    challengeDeclined: "challengeAccepted",
+    acceptChallenge: "acceptChallenge" ,
+    declineChallenge: "declineChallenge"
 };

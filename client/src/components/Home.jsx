@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {
-    challengeUser, 
-    challengeResponse
+    // challengeUser, 
+    // challengeResponse
     // userChallenged,
     // challengeAccepted,
     // challengeDeclined,
@@ -9,6 +9,8 @@ import {
     // declineChallenge
 } from "../common/event_aliases";
 // import {Link} from "react-router-dom";
+import socket from "../common/socket.js";
+import {updateUsers} from "../common/event_aliases.js";
 
 function UsernameForm() {
     const [username, setUsername] = useState("");
@@ -37,18 +39,30 @@ function UsernameForm() {
     );
 }
 
-export default function Home({socket, userList}) {
+
+export default function Home() {
+    const [userList, setUserList] = useState([]);
+
     useEffect(function() {
-        socket.on(challengeUser, function({username, userId}) {
-            socket.emit(challengeResponse, prompt(`you have been challenged by ${username}!`));
+    //     socket.on(challengeUser, function({username, userId}) {
+    //         socket.emit(challengeResponse, prompt(`you have been challenged by ${username}!`));
+    //     });
+    //     socket.on(challengeResponse, function(isChallengeAccepted) {
+    //         alert(isChallengeAccepted ? "challenge accepted" : "challenge declined");
+    //     });
+
+        socket.on(updateUsers, function(users) {
+            console.log(users)
+            setUserList(users.filter(user => user.userId !== socket.id));
         });
-        socket.on(challengeResponse, function(isChallengeAccepted) {
-            alert(isChallengeAccepted ? "challenge accepted" : "challenge declined");
-        });
+
+        return function() {
+            socket.removeAllListeners(updateUsers);
+        }
     }, []);
 
     function handleChallengeButtonClick(userId) {
-        socket.emit(challengeUser, userId);
+        // socket.emit(challengeUser, userId);
     }
 
     return (
