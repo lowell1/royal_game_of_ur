@@ -4,11 +4,10 @@ const options = {
     perMessageDeflate: false
 };
 const io = require('socket.io')(server, options);
-// const {
-//     updateUsers, 
-//     challengeUser, 
-//     userChallenged
-// } = require("./common/event_aliases.js");
+
+const uuidv4 = require("uuid").v4;
+
+const gameRooms = {};
 
 // send list of connected users to client
 function sendUserList() {
@@ -24,12 +23,10 @@ function sendUserList() {
 io.on('connect', function(socket) {
     const cookie = socket.request.headers.cookie;
     const username = cookie && cookie.match(/username=[^;]*/);
-    console.log(cookie)
+
     socket.username = username ? username[0].slice(9) : "???";
-    console.log("username:",username);
-    console.log("socket.username:",socket.username);
+
     sendUserList();
-    
     
     socket.on("updateUsername", function(username) {
         socket.username = username;
@@ -42,24 +39,24 @@ io.on('connect', function(socket) {
         if(user !== undefined) {
             user.emit("challengeDeclined", `${socket.username} is busy`);
         }
-
-        console.log("declineChallenge");
     });
     
     socket.on("acceptChallenge", function(userId) {
         const user = io.sockets.connected[userId];
         
         if(user !== undefined) {
-            user.emit("challengeAccepted");
+            const roomId = uuidv4();
+            gameRooms[roomId] = {player1Id: socket.id, player2Id: userId};
+
+            user.emit("joinRoom", roomId);
+            socket.emit("joinRoom", roomId);
         }
-        console.log("acceptChallenge");
     });
     
     socket.on("challengeUser", function(userId) {
         if(io.sockets.connected[userId] !== undefined) {
             // connectedUsers[userId]
-            io.sockets.connected[userId].emit("userChallenged", {userId, username: socket.username});
-            console.log({userId, username: io.sockets.connected[userId].username})
+            io.sockets.connected[userId].emit("userChallenged", {userId: socket.id, username: socket.username});
         } else {
             socket.emit("challengeDeclined", "Player is not connected");
         }

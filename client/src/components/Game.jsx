@@ -1,9 +1,9 @@
 import React from "react";
 
-export default function Game(props) {
+export default function Game({location: {state: {roomId}}}) {
     return (
         <div>
-            {/* game {props.match.params.roomId} */}
+            {roomId}
         </div>
     )
 }

@@ -1,15 +1,6 @@
 import React, {useState, useEffect} from "react";
-// import {
-//     challengeUser, 
-//     challengeResponse,
-//     userChallenged,
-//     // challengeAccepted,
-//     // challengeDeclined,
-//     // acceptChallenge,
-//     // declineChallenge
-// } from "../common/event_aliases";
-// import {Link} from "react-router-dom";
 import socket from "../common/socket.js";
+import {useHistory} from "react-router-dom";
 
 function UsernameForm() {
     const [username, setUsername] = useState("");
@@ -42,34 +33,28 @@ function UsernameForm() {
 
 export default function Home() {
     const [userList, setUserList] = useState([]);
+    const history = useHistory();
 
     useEffect(function() {
-    //     socket.on(challengeUser, function({username, userId}) {
-    //         socket.emit(challengeResponse, prompt(`you have been challenged by ${username}!`));
-    //     });
-    //     socket.on(challengeResponse, function(isChallengeAccepted) {
-    //         alert(isChallengeAccepted ? "challenge accepted" : "challenge declined");
-    //     });
-
         socket.on("updateUsers", function(users) {
             console.log(users)
             setUserList(users.filter(user => user.userId !== socket.id));
         });
 
         socket.on("userChallenged", function(user) {
-            console.log(`you have been challenged by ${user.username}`)
-            // console.log(window.confirm(`you have been challenged by ${user.username}`) ? "acceptChallenge" : "declineChallenge");
-            socket.emit(window.confirm(`you have been challenged by ${user.username}`) ? "acceptChallenge" : "declineChallenge");
-            // socket.emit("declineChallenge");
-            // alert(`you have been challenged by ${user.username}`)
+            if(window.confirm(`you have been challenged by ${user.username}`)) 
+                socket.emit("acceptChallenge", user.userId)
+            else 
+                socket.emit("declineChallenge", user.userId);
         })
 
         socket.on("challengeDeclined", function(message) {
             alert(message);
         });
 
-        socket.on("challengeAccepted", function() {
-            alert(`accepts your challenge`);
+        socket.on("joinRoom", function(roomId) {
+            console.log(`joining ${roomId}`)
+            history.push("/play", {roomId});
         });
 
         return function() {
@@ -77,6 +62,7 @@ export default function Home() {
             socket.removeAllListeners("userChallenged");
             socket.removeAllListeners("challengeDeclined");
             socket.removeAllListeners("challengeAccepted");
+            socket.removeAllListeners("joinRoom");
         }
     }, []);
 
