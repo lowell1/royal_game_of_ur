@@ -16,7 +16,7 @@ function UsernameForm() {
     
     function handleSubmit(event) {
         event.preventDefault();
-        document.cookie = username;
+        document.cookie = `username=${username}`;
         socket.emit("updateUsername", username);
         setUsername("");
     }
@@ -57,7 +57,7 @@ export default function Home() {
         });
 
         socket.on("userChallenged", function(user) {
-            // confirm(`you have been challenged by ${user.username}`)
+            console.log(`you have been challenged by ${user.username}`)
             // console.log(window.confirm(`you have been challenged by ${user.username}`) ? "acceptChallenge" : "declineChallenge");
             socket.emit(window.confirm(`you have been challenged by ${user.username}`) ? "acceptChallenge" : "declineChallenge");
             // socket.emit("declineChallenge");

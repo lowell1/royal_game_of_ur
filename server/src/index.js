@@ -22,12 +22,18 @@ function sendUserList() {
 }
 
 io.on('connect', function(socket) {
-    socket.username = socket.request.headers.username || "???";
+    const cookie = socket.request.headers.cookie;
+    const username = cookie && cookie.match(/username=[^;]*/);
+    console.log(cookie)
+    socket.username = username ? username[0].slice(9) : "???";
+    console.log("username:",username);
+    console.log("socket.username:",socket.username);
     sendUserList();
     
     
     socket.on("updateUsername", function(username) {
         socket.username = username;
+        sendUserList();
     });
     
     socket.on("declineChallenge", function(userId) {
