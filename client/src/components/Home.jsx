@@ -42,10 +42,10 @@ export default function Home() {
         });
 
         socket.on("userChallenged", function(user) {
-            if(window.confirm(`you have been challenged by ${user.username}`)) 
+            // if(window.confirm(`you have been challenged by ${user.username}`)) 
                 socket.emit("acceptChallenge", user.userId)
-            else 
-                socket.emit("declineChallenge", user.userId);
+            // else 
+            //     socket.emit("declineChallenge", user.userId);
         })
 
         socket.on("challengeDeclined", function(message) {

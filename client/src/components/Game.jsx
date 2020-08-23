@@ -53,15 +53,15 @@ function ChatBox({roomId}) {
 
 export default function Game({location: {state: {roomId}}}) {
     return (
-        <div className="container">
-            <div className="row">
-                <div className="col-8 border">
+         <div className="container">
+             <div className="row">
+                <div className="col-7 border">
                     alwdjalwdjalwkdjalwkjdlakwjd
                 </div>
-                <div className="col-4 border">
+                <div className="col border">
                     <ChatBox roomId={roomId}/>
                 </div>
-            </div>
+             </div>
         </div>
     );
 }
