@@ -48,6 +48,9 @@ io.on('connect', function(socket) {
             const roomId = uuidv4();
             gameRooms[roomId] = {player1Id: socket.id, player2Id: userId};
 
+            user.join(roomId);
+            socket.join(roomId);
+
             user.emit("joinRoom", roomId);
             socket.emit("joinRoom", roomId);
         }
@@ -60,6 +63,12 @@ io.on('connect', function(socket) {
         } else {
             socket.emit("challengeDeclined", "Player is not connected");
         }
+    });
+
+    socket.on("chatMessage", function(data) {
+        const {roomId, message} = data;
+
+        io.to(roomId).emit("chatMessage", {username: socket.username, message: message});
     });
     
     socket.on("disconnect", function() {

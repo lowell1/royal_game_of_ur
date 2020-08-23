@@ -34,7 +34,7 @@ function UsernameForm() {
 export default function Home() {
     const [userList, setUserList] = useState([]);
     const history = useHistory();
-
+    
     useEffect(function() {
         socket.on("updateUsers", function(users) {
             console.log(users)
@@ -64,7 +64,7 @@ export default function Home() {
             socket.removeAllListeners("challengeAccepted");
             socket.removeAllListeners("joinRoom");
         }
-    }, []);
+    }, [history]);
 
     function handleChallengeButtonClick(userId) {
         socket.emit("challengeUser", userId);
